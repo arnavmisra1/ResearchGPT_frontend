@@ -1,0 +1,458 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: #0f0f0f; /* CHANGED from #f5f5f7 */
+}
+
+.app {
+  display: flex;
+  height: 100vh;
+  background: transparent; /* CHANGED: was #0f0f0f, now transparent so stars show through */
+  position: relative;
+  z-index: 1;
+}
+
+.starfield {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  z-index: 0;
+  pointer-events: none; /* so it never blocks clicks on the UI above it */
+}
+
+.star {
+  position: absolute;
+  background: white;
+  border-radius: 50%;
+  animation: floatTwinkle ease-in-out infinite;
+}
+
+@keyframes floatTwinkle {
+  0%, 100% {
+    transform: translateY(0);
+    opacity: 0.3;
+  }
+  50% {
+    transform: translateY(-12px);
+    opacity: 1;
+  }
+}
+
+
+
+/* --- Sidebar --- */
+.sidebar {
+  width: 220px; /* CHANGED: was 240px */
+  background: rgba(15, 15, 15, 0.85);
+  color: white;
+  padding: 20px; /* CHANGED: slightly tighter padding too */
+  display: flex;
+  flex-direction: column;
+  border: none;
+  border-right: 1px solid rgba(255, 255, 255, 0.15);
+}
+.chat-area {
+  flex: 1;
+  min-width: 420px; /* NEW: chat area will never shrink below this */
+  display: flex;
+  flex-direction: column;
+  background: rgba(15, 15, 15, 0.85);
+}
+
+.sidebar h1 {
+  font-size: 19px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  margin: 0 0 28px 0;
+  font-family: -apple-system, 'Inter', sans-serif; /* NEW: serif for a more editorial/professional feel */
+  color: #f5f5f5; /* NEW: slightly softer than pure white */
+}
+
+.upload-box {
+  margin-bottom: 24px;
+}
+
+.upload-label {
+  display: block;
+  background: white; /* CHANGED: was #4f46e5 */
+  color: #1e1e2e; /* CHANGED: dark text on white */
+  text-align: center;
+  padding: 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500; /* NEW */
+  transition: background 0.15s, transform 0.1s; /* CHANGED: added transform */
+}
+
+.upload-label:hover {
+  background: #f0f0f0; /* CHANGED: subtle hover instead of darker indigo */
+  transform: translateY(-1px); /* NEW: slight lift on hover */
+}
+
+.upload-status {
+  font-size: 12px;
+  color: #a1a1aa;
+  margin-top: 8px;
+  word-break: break-word;
+}
+
+.doc-list-title {
+  font-size: 12px;
+  text-transform: uppercase;
+  color: #71717a;
+  margin-bottom: 8px;
+}
+
+.doc-item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: transparent; /* CHANGED: no background for inactive items */
+  color: white; /* CHANGED: white text instead of dark text */
+  border: none;
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-size: 13px;
+  cursor: pointer;
+  margin-bottom: 6px;
+  word-break: break-word;
+  transition: background 0.15s, color 0.15s, transform 0.1s; /* CHANGED: added color transition */
+}
+
+.doc-item:hover {
+  background: rgba(255, 255, 255, 0.1); /* CHANGED: subtle highlight instead of full white */
+  transform: translateY(-1px);
+}
+
+.doc-item.active {
+  background: white; /* CHANGED: active one is white background */
+  color: #1e1e2e; /* CHANGED: dark text so it's readable on white */
+}
+/* --- Chat area --- */
+.chat-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: rgba(15, 15, 15, 0.85);
+}
+
+.messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px; /* CHANGED: slightly tighter, iMessage-like grouping */
+  animation: fadeSwitch 0.3s ease-out;
+}
+
+.empty-state {
+  margin: auto;
+  color: #6b6b6b; /* NEW: lighter gray so it's visible on black */
+  font-size: 15px;
+}
+
+.message {
+  display: flex;
+}
+
+.message.user {
+  justify-content: flex-end;
+}
+
+.message.assistant {
+  justify-content: flex-start;
+}
+
+.bubble {
+  max-width: 60%;
+  padding: 10px 16px;
+  border-radius: 20px; /* CHANGED: rounder, iMessage-like */
+  font-size: 14px;
+  line-height: 1.5;
+  animation: messageIn 0.25s ease-out; /* NEW: entrance animation */
+}
+
+.message.assistant .bubble {
+  background: white;
+  color: #18181b;
+  border: none;
+  border-bottom-left-radius: 6px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.message.assistant .bubble {
+  background: white;
+  color: #18181b;
+  border: none;
+  border-bottom-left-radius: 6px; /* CHANGED: matches iMessage-style tail */
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+@keyframes messageIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes fadeSwitch {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.bubble.loading {
+  color: #a1a1aa;
+  font-style: italic;
+}
+
+.sources {
+  margin-top: 8px;
+  font-size: 11px;
+  opacity: 0.6;
+}
+
+/* --- Input bar --- */
+.input-bar {
+  display: flex;
+  gap: 8px;
+  padding: 20px 32px;
+  background: rgba(15, 15, 15, 0.85); /* CHANGED: same as sidebar/chat-area now */
+  border-top: none; /* CHANGED: removed the divider line */
+}
+
+.input-bar input {
+  flex: 1;
+  padding: 12px 16px;
+  border: 1px solid #333;
+  border-radius: 8px;
+  font-size: 14px;
+  outline: none;
+  background: #0f0f0f; /* NEW */
+  color: white; /* NEW */
+}
+.input-bar input::placeholder {
+  color: #6b6b6b; /* NEW: visible placeholder text on dark input */
+}
+
+.input-bar input:focus {
+  border-color: #4f46e5;
+}
+
+.input-bar button {
+  padding: 12px 24px;
+  background: #4f46e5;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.input-bar button:hover:not(:disabled) {
+  background: #4338ca;
+}
+
+.input-bar button:disabled,
+.input-bar input:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.delete-btn {
+  margin-top: 16px;
+  background: transparent;
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.delete-btn:hover {
+  background: rgba(239, 68, 68, 0.1);
+}
+
+.main-content {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+}
+
+.pdf-viewer {
+  flex-shrink: 0;
+  background: rgba(15, 15, 15, 0.85);
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-sizing: border-box;
+  /* NOTE: border-right removed here, moved to the new .divider element */
+}
+
+.pdf-loading {
+  color: #6b6b6b;
+  padding: 40px;
+}
+
+.pdf-controls {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 16px;
+  color: white;
+  font-size: 13px;
+}
+
+.pdf-controls button {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.pdf-controls button:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.pdf-controls button:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.highlight-popup {
+  position: fixed;
+  transform: translateX(-50%);
+  background: #1e1e2e;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  padding: 6px;
+  z-index: 100;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.highlight-popup button {
+  background: #4f46e5;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.highlight-popup button:hover {
+  background: #4338ca;
+}
+
+.annotations-list {
+  margin-top: 16px;
+  width: 100%;
+  max-width: 750px; /* CHANGED: matches new page width */
+}
+
+.annotations-title {
+  font-size: 11px;
+  text-transform: uppercase;
+  color: #71717a;
+  margin-bottom: 8px;
+}
+
+.annotation-item {
+  background: rgba(255, 220, 100, 0.15);
+  border-left: 3px solid #facc15;
+  padding: 8px 10px;
+  border-radius: 4px;
+  font-size: 12px;
+  color: #e5e5e5;
+  margin-bottom: 6px;
+}
+
+.pdf-page-wrapper {
+  position: relative; /* anchor point for the absolutely-positioned overlay */
+  display: inline-block;
+}
+
+.highlight-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none; /* clicks pass through to the PDF text underneath */
+}
+
+.highlight-mark {
+  position: absolute;
+  background: rgba(250, 204, 21, 0.35); /* translucent yellow */
+  border-radius: 2px;
+  pointer-events: auto; /* re-enable hover/tooltip on the highlight itself */
+  cursor: pointer;
+}
+
+.summary-card {
+  margin: 20px 32px 0 32px;
+  padding: 16px 20px;
+  background: rgba(79, 70, 229, 0.1);
+  border: 1px solid rgba(79, 70, 229, 0.3);
+  border-radius: 12px;
+  animation: messageIn 0.3s ease-out;
+}
+
+.summary-text {
+  margin: 0 0 12px 0;
+  color: #e5e5e5;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.summary-topics {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.topic-tag {
+  background: rgba(79, 70, 229, 0.25);
+  color: #c7d2fe;
+  font-size: 11px;
+  padding: 4px 10px;
+  border-radius: 12px;
+}
+
+.divider {
+  width: 6px;
+  cursor: col-resize;
+  background: rgba(255, 255, 255, 0.08);
+  flex-shrink: 0;
+  transition: background 0.15s;
+}
+
+.divider:hover,
+.divider:active {
+  background: rgba(79, 70, 229, 0.5);
+}

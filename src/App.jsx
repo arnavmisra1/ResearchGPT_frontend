@@ -6,6 +6,8 @@ import './App.css'
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`
 
+const API_URL = import.meta.env.VITE_API_URL
+
 function Starfield() {
   const stars = useMemo(() => {
     return Array.from({ length: 80 }).map((_, i) => ({
@@ -48,7 +50,7 @@ function PDFViewer({ filename, panelWidth }) {
   useEffect(() => {
     if (!filename) return
 
-    fetch(`http://localhost:8000/annotations/${filename}`)
+    fetch(`${API_URL}/annotations/${filename}`)
       .then(res => res.json())
       .then(data => setAnnotations(data))
       .catch(err => console.error('Failed to load annotations:', err))
@@ -96,7 +98,7 @@ function PDFViewer({ filename, panelWidth }) {
     const page = pageNumber
     const rects = selectionRects
 
-    fetch('http://localhost:8000/annotations', {
+    fetch(`${API_URL}/annotations`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -133,7 +135,7 @@ function PDFViewer({ filename, panelWidth }) {
     <div className="pdf-viewer" style={{ width: panelWidth }} onMouseUp={handleMouseUp}>
       <div className="pdf-page-wrapper">
         <Document
-          file={`http://localhost:8000/pdf/${filename}`}
+          file={`${API_URL}/pdf/${filename}`}
           onLoadSuccess={onDocumentLoadSuccess}
           loading={<div className="pdf-loading">Loading PDF...</div>}
         >
@@ -214,7 +216,7 @@ function App() {
       return
     }
 
-    fetch(`http://localhost:8000/summary/${selectedFile}`)
+    fetch(`${API_URL}/summary/${selectedFile}`)
       .then(res => res.json())
       .then(data => setSummary(data.summary ? data : null))
       .catch(() => setSummary(null))
@@ -252,7 +254,7 @@ function App() {
 
     setUploadStatus('Uploading...')
 
-    fetch('http://localhost:8000/upload', {
+    fetch(`${API_URL}/upload`, {
       method: 'POST',
       body: formData
     })
@@ -280,7 +282,7 @@ function App() {
 
     const fileToDelete = selectedFile
 
-    fetch(`http://localhost:8000/document/${encodeURIComponent(fileToDelete)}`, {
+    fetch(`${API_URL}/document/${encodeURIComponent(fileToDelete)}`, {
       method: 'DELETE'
     })
       .then(async response => {
@@ -330,7 +332,7 @@ function App() {
     }))
 
     try {
-      const response = await fetch('http://localhost:8000/chat', {
+      const response = await fetch(`${API_URL}/chat`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ question: userQuestion, filename: selectedFile, history: history })
